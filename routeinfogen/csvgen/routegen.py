@@ -6,9 +6,9 @@ class RouteCsvGen(AbstractCsvGen):
 
     defaultRouteAnim = "道"
 
-    def _fetchNames(self, armature: bpy.types.Armature) -> list[str]:
+    def _fetchNames(self, index: int) -> list[str]:
         routeBones: list[bpy.types.Bone] = []
-        for bone in armature.bones:
+        for bone in self._armatures[index].bones:
             if re.compile(r"R(?:[FKW][a-zA-Z0-9]{3}){2}").match(bone.name):
                 routeBones.append(bone)
 
@@ -18,7 +18,7 @@ class RouteCsvGen(AbstractCsvGen):
 
         return result
 
-    def _createCsvText(self, names: list[str]) -> str:
+    def _createCsvText(self, names: list[str], index: int) -> str:
         csv = ""
         for name in names:
             csv += f"{name},{self.defaultRouteAnim},\r\n"

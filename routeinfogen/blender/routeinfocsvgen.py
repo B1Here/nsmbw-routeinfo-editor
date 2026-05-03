@@ -68,7 +68,6 @@ class RouteInfoCsvGen(bpy.types.Operator):
         layout.prop(self, "filePath")
 
     def __getCsArmatures(self, context: bpy.types.Context) -> list[bpy.types.Armature]:
-        """Helper function to get all armature objects in the scene that match the naming pattern for `CS_Wxy`."""
         csArmatures: list[bpy.types.Object] = []
         csPattern = re.compile(r"^CS_W\d[ab]?$")
 
