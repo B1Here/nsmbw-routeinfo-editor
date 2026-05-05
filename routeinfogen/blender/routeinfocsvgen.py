@@ -28,6 +28,23 @@ class RouteInfoCsvGen(bpy.types.Operator):
         default="//",
     ) # pyright: ignore[reportInvalidTypeForm]
 
+    routeAnimation: bpy.props.EnumProperty(
+        name="Default Animation",
+        description="The default animation to use for all generated routes",
+        items=(
+            ('道', "Walk Grass", ""),
+            ('砂', "Walk Sand", ""),
+            ('流砂', "Walk Quicksand", ""),
+            ('雪', "Walk Snow", ""),
+            ('氷', "Walk Ice", ""),
+            ('木', "Walk Wood", ""),
+            ('土', "Walk Dirt", ""),
+            ('坂', "Snowy Slope", ""),
+            ('氷坂', "Icy Slope", ""),
+        ),
+        default="道",
+    ) # pyright: ignore[reportInvalidTypeForm]
+
     def execute(self, context: bpy.types.Context): # pyright: ignore[reportIncompatibleMethodOverride]
         armatureData = self.__getCsArmatures(context)
         if not armatureData:
@@ -45,7 +62,7 @@ class RouteInfoCsvGen(bpy.types.Operator):
 
         # Run each generator for each armature
         for cls in classes:
-            op = cls(armatureData, {"filePath": self.filePath})
+            op = cls(armatureData, {"filePath": self.filePath, "routeAnimation": self.routeAnimation})
             successfulFiles = op.run()
             if len(successfulFiles) < len(armatureData):
                 self.report({'WARNING'}, f"Generated {len(successfulFiles)} out of {len(armatureData)} files for {cls.__name__}.")
@@ -66,7 +83,7 @@ class RouteInfoCsvGen(bpy.types.Operator):
         layout.use_property_split = True
         layout.prop(self, "type")
         layout.prop(self, "filePath")
-
+        layout.prop(self, "routeAnimation")
     def __getCsArmatures(self, context: bpy.types.Context) -> list[bpy.types.Armature]:
         csArmatures: list[bpy.types.Object] = []
         csPattern = re.compile(r"^CS_W\d[ab]?$")

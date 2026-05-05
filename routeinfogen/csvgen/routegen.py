@@ -4,8 +4,6 @@ from .abstractcsvgen import AbstractCsvGen
 
 class RouteCsvGen(AbstractCsvGen):
 
-    defaultRouteAnim = "道"
-
     def _fetchNames(self, index: int) -> list[str]:
         routeBones: list[bpy.types.Bone] = []
         for bone in self._armatures[index].bones:
@@ -20,8 +18,9 @@ class RouteCsvGen(AbstractCsvGen):
 
     def _createCsvText(self, names: list[str], index: int) -> str:
         csv = ""
+        routeAnimation = self._config.get("routeAnimation", "道") # Default to "Walk Grass"
         for name in names:
-            csv += f"{name},{self.defaultRouteAnim},\r\n"
+            csv += f"{name},{routeAnimation},\r\n"
 
         return csv
 
