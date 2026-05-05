@@ -4,9 +4,11 @@ import re
 
 class AbstractCsvGen(ABC):
     _armatures: list[bpy.types.Armature]
+    _config: dict
 
-    def __init__(self, armatures: list[bpy.types.Armature]):
+    def __init__(self, armatures: list[bpy.types.Armature], config: dict):
         self._armatures = armatures
+        self._config = config
 
     def run(self) -> list[str]:
         successfulFiles: list[str] = []
@@ -14,7 +16,10 @@ class AbstractCsvGen(ABC):
         for index in range(len(self._armatures)):
             world = self._getWorldFromArmature(index)
             csvData = self._createCsvText(self._fetchNames(index), index)
-            fileName = f"//{self._getFileName(world)}"
+            path: str = self._config.get("filePath", "//")
+            if not path.endswith("/"):
+                path += "/"
+            fileName = f"{path}{self._getFileName(world)}"
             self._saveFile(csvData, fileName)
             successfulFiles.append(fileName)
 

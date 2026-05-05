@@ -45,7 +45,7 @@ class RouteInfoCsvGen(bpy.types.Operator):
 
         # Run each generator for each armature
         for cls in classes:
-            op = cls(armatureData)
+            op = cls(armatureData, {"filePath": self.filePath})
             successfulFiles = op.run()
             if len(successfulFiles) < len(armatureData):
                 self.report({'WARNING'}, f"Generated {len(successfulFiles)} out of {len(armatureData)} files for {cls.__name__}.")
