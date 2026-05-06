@@ -22,6 +22,6 @@ The individual points and routes are defined by the order of the bones within th
 
 If specific parts of the files need to be edited, then my [online-tool](https://b1here.github.io/route-editor) can help by allowing you to edit the CSV files in the browser directly.
 
-[release-version-image]: https://img.shields.io/github/v/release/B1Here/routeinfo-gen?logo=blender&logoColor=white&
-[releases-url]: https://github.com/b1here/routeinfo-gen/releases
-[stars-image]: https://img.shields.io/github/stars/B1Here/routeinfo-gen?style=flat&logo=github&color=yellow&
+[release-version-image]: https://img.shields.io/github/v/release/B1Here/routeinfo-gen?logo=blender&logoColor=white
+[releases-url]: https://github.com/B1Here/routeinfo-gen/releases
+[stars-image]: https://img.shields.io/github/stars/B1Here/routeinfo-gen?style=flat&logo=github&color=yellow
