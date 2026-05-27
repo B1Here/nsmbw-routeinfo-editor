@@ -1,36 +1,30 @@
-import bpy
-import re
+from routeinfogen.csvgen.utilities import isLevelPoint, isFlagPoint
 from .abstractcsvgen import AbstractCsvGen
 
 class PointCsvGen(AbstractCsvGen):
-    def _fetchNames(self, index: int) -> list[str]:
+    def _fetchNames(self) -> list[str]:
         pointNames: list[str] = []
-        for bone in self._armatures[index].bones:
-            if re.compile(r"(?:[FW][a-zA-Z0-9]{3})").match(bone.name):
+        for bone in self._getBones():
+            if isLevelPoint(bone.name) or isFlagPoint(bone.name):
                 pointNames.append(bone.name)
 
         return pointNames
 
-    def _createCsvText(self, names: list[str], index: int) -> str:
+    def _createCsvText(self, names: list[str]) -> str:
         csv: str = ""
         id: int = 0
+        bones = self._getBones()
         for bone in names:
-            flags: list[str] = []
-            if (bone.startswith('F') and (any(b.name.startswith(f"R{bone}") for b in self._armatures[index].bones)
-                    or any((b.name.startswith("R") and b.name.endswith(bone)) for b in self._armatures[index].bones))):
-                flags.append('stop')
+            routeInfoSettings = bones[bone].route_info_point_settings
 
-            flagsStr = ''
-            if len(flags) > 1:
-                flagsStr = f'"{",".join(flags)}"'
-            else:
-                flagsStr = ",".join(flags)
-
-
-            csv += f"{id},{bone},{flagsStr},,,,,,\r\n"
+            csv += (f"{id},{bone},{self._csvArrayGuard(routeInfoSettings.flags)},{self._csvArrayGuard(routeInfoSettings.unlocked_levels)},{self._csvArrayGuard(routeInfoSettings.unlocked_bones)},"
+                + f",{self._csvArrayGuard(routeInfoSettings.unlocked_levels_secret_exit)},{self._csvArrayGuard(routeInfoSettings.unlocked_bones_secret_exit)},\r\n")
             id += 1
 
         return csv
 
     def _getFileName(self, world: str) -> str:
         return f"pointW{world}.csv"
+
+    def _csvArrayGuard(self, string: str) -> str:
+        return f'"{string}"' if "," in string else string

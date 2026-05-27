@@ -1,40 +1,27 @@
 import bpy
-import re
+from routeinfogen.csvgen.utilities import isDefined
 from .abstractcsvgen import AbstractCsvGen
 
 class RouteCsvGen(AbstractCsvGen):
 
-    def _fetchNames(self, index: int) -> list[str]:
-        routeBones: list[bpy.types.Bone] = []
-        for bone in self._armatures[index].bones:
-            if re.compile(r"R(?:[FKW][a-zA-Z0-9]{3}){2}").match(bone.name):
-                routeBones.append(bone)
+    def _fetchNames(self) -> list[str]:
+        return list()
 
-        result: list[str] = []
-        for bone in routeBones:
-            self.__addRouteForBone(bone, result)
+    def _createCsvText(self, names: list[str]) -> str:
+        routes = self._armature.route_info_route_settings.routes
 
-        return result
-
-    def _createCsvText(self, names: list[str], index: int) -> str:
         csv = ""
-        routeAnimation = self._config.get("routeAnimation", "道") # Default to "Walk Grass"
-        for name in names:
-            csv += f"{name},{routeAnimation},\r\n"
+        for route in routes:
+            print(route, route.name, route.animation, route.flags)
+            csv += f"{route.name},{route.animation},{route.flags}\r\n"
 
         return csv
 
     def _getFileName(self, world: str) -> str:
         return f"routeW{world}.csv"
 
-    def __addRouteForBone(self, bone: bpy.types.Bone, routeNames: list[str]):
-        if bone.children and filter(lambda child: re.compile(r"[FKW][a-zA-Z0-9]{3}").match(child.name), bone.children):
-            self.__addRouteViaChild(bone, routeNames)
-            return
-        routeNames.append(bone.name)
-
     def __addRouteViaChild(self, bone: bpy.types.Bone, routeNames: list[str]):
-        if not bone.children:
+        if not isDefined(bone.children) or len(bone.children) == 0:
             return
         boneName = bone.name
         if boneName.startswith("R"):
@@ -48,6 +35,6 @@ class RouteCsvGen(AbstractCsvGen):
                 routeNames.append(f"R{lastChild.name}{bone.name[5:9]}")
 
     def __getLastPointChild(self, bone: bpy.types.Bone) -> bpy.types.Bone:
-        if not bone.children:
+        if not isDefined(bone.children) or len(bone.children) == 0:
             return bone
         return self.__getLastPointChild(bone.children[0])

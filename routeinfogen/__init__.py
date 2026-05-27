@@ -1,23 +1,57 @@
+from .blender import (csv, point, route, routeops)
 import bpy
-from .blender import routeinfocsvgen
 
 bl_info = {
-    "name": "RouteInfo CSV Generator",
+    "name": "RouteInfo CSV Editor",
     "author": "B1Here",
     "blender": (3, 3, 0),
-    "version": (1, 0, 2),
-    "category": "Import-Export",
-    "description": "Generate boilerplate RouteInfo CSV files for NSMBW",
+    "version": (1, 1, 0),
+    "category": "Interface",
+    "description": "Allows editing and generating NSMBW RouteInfo CSV files from armatures directly.",
     "location": "3D Viewport > Object > Generate RouteInfo CSVs",
 }
 
+classes = (
+    # data
+    csv.RouteInfoCsvGenOperator,
+    csv.RouteInfoDataCleanupOperator,
+    csv.RouteInfoCsvSettings,
+    csv.RouteInfoValidateOperator,
+    point.RouteInfoPointSettings,
+    route.RouteInfoRouteDetailProperties,
+    route.RouteInfoRoutesList,
+    route.RouteInfoRouteSettings,
+    # ui
+    csv.RouteInfoCsvPanel,
+    point.RouteInfoPointPanel,
+    point.RouteInfoPointSecretPanel,
+    route.RouteInfoRoutePanel,
+    # operators
+    routeops.RouteInfoRouteAddOperator,
+    routeops.RouteInfoRouteRemoveOperator,
+    routeops.RouteInfoRouteDuplicateOperator,
+    routeops.RouteInfoRouteMoveUpOperator,
+    routeops.RouteInfoRouteMoveDownOperator,
+    routeops.RouteInfoRouteRefreshOperator,
+    routeops.RouteInfoRouteSelectBonesOperator,
+)
+
 def register():
-    bpy.utils.register_class(routeinfocsvgen.RouteInfoCsvGen)
-    bpy.types.VIEW3D_MT_object.append(routeinfocsvgen.drawOp)
+    for cls in classes:
+        bpy.utils.register_class(cls)
+    bpy.types.Armature.route_info_csv_settings = bpy.props.PointerProperty(type=csv.RouteInfoCsvSettings)
+    bpy.types.Armature.route_info_route_settings = bpy.props.PointerProperty(type=route.RouteInfoRouteSettings)
+    bpy.types.Bone.route_info_point_settings = bpy.props.PointerProperty(type=point.RouteInfoPointSettings)
+    bpy.types.EditBone.route_info_point_settings = bpy.props.PointerProperty(type=point.RouteInfoPointSettings)
+    bpy.types.PoseBone.route_info_point_settings = bpy.props.PointerProperty(type=point.RouteInfoPointSettings)
 
 def unregister():
-    bpy.types.VIEW3D_MT_object.remove(routeinfocsvgen.drawOp)
-    bpy.utils.unregister_class(routeinfocsvgen.RouteInfoCsvGen)
-
+    del bpy.types.PoseBone.route_info_point_settings
+    del bpy.types.EditBone.route_info_point_settings
+    del bpy.types.Bone.route_info_point_settings
+    del bpy.types.Armature.route_info_route_settings
+    del bpy.types.Armature.route_info_csv_settings
+    for cls in reversed(classes):
+        bpy.utils.unregister_class(cls)
 if __name__ == "__main__":
     register()
