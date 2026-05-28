@@ -1,26 +1,25 @@
-# RouteInfo-Gen
+# RouteInfo-Editor
 
 [![Latest Release][release-version-image]][releases-url] ![Repo Stars][stars-image]
 
-A simple NSMBW RouteInfo CSV-generator Add-on for [Blender](https://blender.org/)
+A simple NSMBW RouteInfo editor and CSV-generator Add-on for [Blender](https://blender.org/)
 
-Quickly generate boilerplate, NSMBW-ready RouteInfo CSV files for all `CS_Wxy` armatures.
+Define and generate RouteInfo CSV files for your `CS_Wxy` armatures.
 
 Download the latest release [here](https://github.com/B1Here/routeinfo-gen/releases).
 
 ## Usage
 
-1. Open the Dialog through the 3D Viewport via `Object > Generate RouteInfo CSVs`
-2. Select whether only point, route or both types of files should be generated (default: Both)
-3. Define where to save the files (default: same directory as the opened `.blend` file)
-4. Choose a player animation all routes should have (not necessary if only points are generated; default: "Walk Grass")
-5. Execute the script
+- Point data can be edited in the Bone Properties section. Make sure you have a bone with a valid point name selected in Edit Mode.
+- Routes can be edited in the Object Data Properties of an armature. They are generated automatically based on the bone hierachy of the respective `CS_Wxy` armature. To add/remove routes. A simple refresh of the list will do the trick.
+- Validate your CSV data with the help of a single button click.
+- Choose your file path and press the button to make the add-on generate the proper CSV files.
 
 ## Notices
 
 The individual points and routes are defined by the order of the bones within the armature.
 
-If specific parts of the files need to be edited, then my [online-tool](https://b1here.github.io/route-editor) can help by allowing you to edit the CSV files in the browser directly.
+For more information on Points and Routes, read [this article](https://horizon.miraheze.org/wiki/World_Map_Data).
 
 [release-version-image]: https://img.shields.io/github/v/release/B1Here/routeinfo-gen?logo=blender&logoColor=white
 [releases-url]: https://github.com/B1Here/routeinfo-gen/releases
