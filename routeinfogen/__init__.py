@@ -22,10 +22,10 @@ classes = (
     route.RouteInfoRoutesList,
     route.RouteInfoRouteSettings,
     # ui
+    route.RouteInfoRoutePanel,
     csv.RouteInfoCsvPanel,
     point.RouteInfoPointPanel,
     point.RouteInfoPointSecretPanel,
-    route.RouteInfoRoutePanel,
     # operators
     routeops.RouteInfoRouteAddOperator,
     routeops.RouteInfoRouteRemoveOperator,
