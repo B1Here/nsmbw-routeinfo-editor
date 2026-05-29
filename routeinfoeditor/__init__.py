@@ -8,7 +8,6 @@ bl_info = {
     "version": (1, 1, 0),
     "category": "Interface",
     "description": "Allows editing and generating NSMBW RouteInfo CSV files from armatures directly.",
-    "location": "3D Viewport > Object > Generate RouteInfo CSVs",
 }
 
 classes = (
