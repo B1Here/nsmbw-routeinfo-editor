@@ -21,6 +21,6 @@ The individual points and routes are defined by the order of the bones within th
 
 For more information on Points and Routes, read [this article](https://horizon.miraheze.org/wiki/World_Map_Data).
 
-[release-version-image]: https://img.shields.io/github/v/release/B1Here/routeinfo-gen?logo=blender&logoColor=white
-[releases-url]: https://github.com/B1Here/routeinfo-gen/releases
-[stars-image]: https://img.shields.io/github/stars/B1Here/routeinfo-gen?style=flat&logo=github&color=yellow
+[release-version-image]: https://img.shields.io/github/v/release/B1Here/nsmbw-routeinfo-editor?logo=blender&logoColor=white
+[releases-url]: https://github.com/B1Here/nsmbw-routeinfo-editor/releases
+[stars-image]: https://img.shields.io/github/stars/B1Here/nsmbw-routeinfo-editor?style=flat&logo=github&color=yellow
