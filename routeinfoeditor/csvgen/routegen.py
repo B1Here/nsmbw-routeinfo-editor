@@ -1,5 +1,5 @@
 import bpy
-from routeinfogen.csvgen.utilities import isDefined
+from .utilities import isDefined
 from .abstractcsvgen import AbstractCsvGen
 
 class RouteCsvGen(AbstractCsvGen):

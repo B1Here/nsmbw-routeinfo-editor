@@ -1,6 +1,6 @@
 import bpy
 import re
-from routeinfogen.csvgen.utilities import isDefined
+from ..csvgen.utilities import isDefined
 
 class RouteInfoRoutesList(bpy.types.UIList):
     bl_idname = "ROUTEINFO_ROUTE_UL_routes_list"

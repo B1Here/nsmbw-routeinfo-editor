@@ -1,6 +1,6 @@
 import bpy
 
-from routeinfogen.csvgen.utilities import isDefined, isFlagPoint, isLevelPoint
+from ..csvgen.utilities import isDefined, isFlagPoint, isLevelPoint
 
 class RouteInfoPointSettings(bpy.types.PropertyGroup):
     flags: bpy.props.StringProperty(

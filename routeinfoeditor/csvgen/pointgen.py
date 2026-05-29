@@ -1,4 +1,4 @@
-from routeinfogen.csvgen.utilities import getModeSpecificBones, isLevelPoint, isFlagPoint
+from .utilities import getModeSpecificBones, isLevelPoint, isFlagPoint
 from .abstractcsvgen import AbstractCsvGen
 
 class PointCsvGen(AbstractCsvGen):

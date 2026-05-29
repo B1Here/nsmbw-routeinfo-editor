@@ -1,6 +1,6 @@
 import bpy
 from typing import Literal
-from routeinfogen.csvgen.utilities import getModeSpecificBones, isDefined, isPoint
+from ..csvgen.utilities import getModeSpecificBones, isDefined, isPoint
 
 class RouteInfoRouteAddOperator(bpy.types.Operator):
     bl_idname = "routeinfo.add_route"
