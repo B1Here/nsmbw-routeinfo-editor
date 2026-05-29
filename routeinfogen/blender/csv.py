@@ -9,6 +9,39 @@ from ..csvgen.abstractcsvgen import AbstractCsvGen
 from ..csvgen.routegen import RouteCsvGen
 from ..csvgen.pointgen import PointCsvGen
 
+allFlags = [
+    'stop',
+    'crossroad',
+    'dokan',
+    'scrollY',
+    'scrollA',
+    'scroll',
+    'focus',
+    'camstop',
+    'demo1',
+    'demo2',
+    'demo3',
+    'demo4',
+    'demo5',
+    'demo6',
+    'demo7',
+    'sand',
+    'ice',
+    'noshift',
+    'link1',
+    'switch',
+    'ura',
+    'scale',
+    'demostop',
+    'tilt',
+    'board',
+    'link2',
+    'link3',
+    'link4',
+    'link5',
+    'anchor'
+]
+
 class RouteInfoCsvGenOperator(bpy.types.Operator):
     """Generate RouteInfo CSV files"""
 
@@ -79,6 +112,14 @@ class RouteInfoValidateOperator(bpy.types.Operator):
         allBoneNames = list(map(lambda b: b.name, getModeSpecificBones(context)))
 
         warningCount = 0
+        # Check that all flags on flag points and level points are valid point flags
+        for bone in filter(lambda b: isFlagPoint(b.name) or isLevelPoint(b.name), getModeSpecificBones(context)):
+            pointSettings = bone.route_info_point_settings
+            for flag in filter(lambda f: f.strip(), pointSettings.flags.split(",")):
+                if flag and flag not in allFlags:
+                    self.report({'WARNING'}, f"Bone {bone.name} has a flag \"{flag}\" that is not a valid point flag.")
+                    warningCount += 1
+
         # Check that all unlocked levels and bones on level points reference existing bones
         for bone in filter(lambda b: isLevelPoint(b.name), getModeSpecificBones(context)):
             pointSettings = bone.route_info_point_settings
