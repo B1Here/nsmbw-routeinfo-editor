@@ -12,7 +12,6 @@ class RouteCsvGen(AbstractCsvGen):
 
         csv = ""
         for route in routes:
-            print(route, route.name, route.animation, route.flags)
             csv += f"{route.name},{route.animation},{route.flags}\r\n"
 
         return csv

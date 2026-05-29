@@ -101,8 +101,6 @@ class RouteInfoRouteRefreshOperator(bpy.types.Operator):
             if route.name not in newRouteNames:
                 indiciesToRemove.append(i)
 
-        print(indiciesToRemove, routeSettings.routes)
-
         for i in reversed(indiciesToRemove):
             routeSettings.routes.remove(i)
         bones = self.__getBones(context)
