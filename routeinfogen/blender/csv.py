@@ -4,7 +4,7 @@ import bpy
 import re
 
 from bpy.types import Context
-from ..csvgen.utilities import isDefined, isFlagPoint, isLevelPoint
+from ..csvgen.utilities import getModeSpecificBones, isDefined, isFlagPoint, isLevelPoint
 from ..csvgen.abstractcsvgen import AbstractCsvGen
 from ..csvgen.routegen import RouteCsvGen
 from ..csvgen.pointgen import PointCsvGen
@@ -26,7 +26,7 @@ class RouteInfoCsvGenOperator(bpy.types.Operator):
 
         # Run each generator for each armature
         for cls in classes:
-            op = cls(armatureData, {"filePath": riSettings.filePath, "mode": context.object.mode})
+            op = cls(context, {"filePath": riSettings.filePath, "mode": context.object.mode})
             successfulFiles = op.run()
             if len(successfulFiles) < len([armatureData]):
                 self.report({'WARNING'}, f"Generated {len(successfulFiles)} out of {len([armatureData])} files for {cls.__name__}.")
@@ -49,7 +49,7 @@ class RouteInfoDataCleanupOperator(bpy.types.Operator):
             self.report({'ERROR'}, "No armature found.")
             return {'CANCELLED'}
 
-        for bone in getBones(context):
+        for bone in getModeSpecificBones(context):
             pointSettings = bone.route_info_point_settings
             if not isFlagPoint(bone.name) and not isLevelPoint(bone.name):
                 pointSettings.flags = ""
@@ -76,10 +76,11 @@ class RouteInfoValidateOperator(bpy.types.Operator):
             self.report({'ERROR'}, "No armature found.")
             return {'CANCELLED'}
 
-        allBoneNames = list(map(lambda b: b.name, getBones(context)))
+        allBoneNames = list(map(lambda b: b.name, getModeSpecificBones(context)))
 
         warningCount = 0
-        for bone in filter(lambda b: isLevelPoint(b.name), getBones(context)):
+        # Check that all unlocked levels and bones on level points reference existing bones
+        for bone in filter(lambda b: isLevelPoint(b.name), getModeSpecificBones(context)):
             pointSettings = bone.route_info_point_settings
             for level in filter(lambda l: l.strip() != '', pointSettings.unlocked_levels.split(",")):
                 if level and level not in allBoneNames:
@@ -102,18 +103,10 @@ class RouteInfoValidateOperator(bpy.types.Operator):
                     warningCount += 1
 
         if warningCount > 0:
-            self.report({'WARNING'}, f"Finished validating RouteInfo data with {warningCount} warnings.")
+            self.report({'WARNING'}, f"Finished validating RouteInfo data with {warningCount} warning(s).")
         else:
             self.report({'INFO'}, "Finished validating RouteInfo data with no issues found.")
         return {'FINISHED'}
-
-def getBones(context: bpy.types.Context):
-    if (context.object.mode == 'EDIT'):
-        return context.armature.edit_bones
-    if (context.object.mode == 'POSE'):
-        return context.armature.pose.bones
-    return context.armature.bones
-
 
 class RouteInfoCsvSettings(bpy.types.PropertyGroup):
     filePath: bpy.props.StringProperty(

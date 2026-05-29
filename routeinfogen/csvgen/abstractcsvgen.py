@@ -3,17 +3,17 @@ from abc import ABC, abstractmethod
 import re
 
 class AbstractCsvGen(ABC):
-    _armature: bpy.types.Armature
+    _context: bpy.types.Context
     _config: dict
 
-    def __init__(self, armature: bpy.types.Armature, config: dict):
-        self._armature = armature
+    def __init__(self, context: bpy.types.Context, config: dict):
+        self._context = context
         self._config = config
 
     def run(self) -> list[str]:
         successfulFiles: list[str] = []
 
-        world = self._getWorldFromArmature(self._armature)
+        world = self._getWorldFromArmature(self._context.armature)
         csvData = self._createCsvText(self._fetchNames())
         path: str = self._config.get("filePath", "//")
         if not path.endswith("/"):
@@ -28,18 +28,13 @@ class AbstractCsvGen(ABC):
         with open(bpy.path.abspath(path), 'wb') as file:
             file.write(content.encode('shift_jis'))
 
-    def _getWorldFromArmature(self, armature: bpy.types.Armature) -> str:
+    def _getWorldFromArmature(self, armature: bpy.types.Armature | None) -> str:
+        if armature is None:
+            return "0"
         match = re.match(r"^CS_W(\d[ab]?)$", armature.name)
         if match:
             return match.group(1)
         return "0"
-
-    def _getBones(self):
-        if (self._config.get('mode') == 'EDIT'):
-            return self._armature.edit_bones
-        if (self._config.get('mode') == 'POSE'):
-            return self._armature.pose.bones
-        return self._armature.bones
 
     @abstractmethod
     def _fetchNames(self) -> list[str]:

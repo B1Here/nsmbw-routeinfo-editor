@@ -1,10 +1,10 @@
-from routeinfogen.csvgen.utilities import isLevelPoint, isFlagPoint
+from routeinfogen.csvgen.utilities import getModeSpecificBones, isLevelPoint, isFlagPoint
 from .abstractcsvgen import AbstractCsvGen
 
 class PointCsvGen(AbstractCsvGen):
     def _fetchNames(self) -> list[str]:
         pointNames: list[str] = []
-        for bone in self._getBones():
+        for bone in getModeSpecificBones(self._context):
             if isLevelPoint(bone.name) or isFlagPoint(bone.name):
                 pointNames.append(bone.name)
 
@@ -13,7 +13,7 @@ class PointCsvGen(AbstractCsvGen):
     def _createCsvText(self, names: list[str]) -> str:
         csv: str = ""
         id: int = 0
-        bones = self._getBones()
+        bones = getModeSpecificBones(self._context)
         for bone in names:
             routeInfoSettings = bones[bone].route_info_point_settings
 

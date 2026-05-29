@@ -1,6 +1,6 @@
 import bpy
 from typing import Literal
-from routeinfogen.csvgen.utilities import isDefined, isPoint
+from routeinfogen.csvgen.utilities import getModeSpecificBones, isDefined, isPoint
 
 class RouteInfoRouteAddOperator(bpy.types.Operator):
     bl_idname = "routeinfo.add_route"
@@ -91,7 +91,7 @@ class RouteInfoRouteRefreshOperator(bpy.types.Operator):
             return {'CANCELLED'}
         routeSettings = armature.route_info_route_settings
 
-        bones = self.__getBones(context)
+        bones = getModeSpecificBones(context)
         newRouteNames = self._fetchNames(bones)
 
         # Keep routes where both bones still exist, remove routes where either bone doesn't exist, and add routes for new bone pairs
@@ -103,7 +103,7 @@ class RouteInfoRouteRefreshOperator(bpy.types.Operator):
 
         for i in reversed(indiciesToRemove):
             routeSettings.routes.remove(i)
-        bones = self.__getBones(context)
+        bones = getModeSpecificBones(context)
         existingRouteNames = {route.name for route in routeSettings.routes}
 
         if bones:
@@ -150,13 +150,6 @@ class RouteInfoRouteRefreshOperator(bpy.types.Operator):
         if not isDefined(bone.children) or len(bone.children) == 0:
             return bone
         return self.__getLastPointChild(bone.children[0])
-
-    def __getBones(self, context: bpy.types.Context):
-        if (context.object.mode == 'EDIT'):
-            return context.armature.edit_bones
-        if (context.object.mode == 'POSE'):
-            return context.armature.pose.bones
-        return context.armature.bones
 
 class RouteInfoRouteSelectBonesOperator(bpy.types.Operator):
     bl_idname = "routeinfo.route_select_bones"

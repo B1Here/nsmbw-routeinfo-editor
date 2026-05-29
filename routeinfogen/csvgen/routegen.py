@@ -8,7 +8,7 @@ class RouteCsvGen(AbstractCsvGen):
         return list()
 
     def _createCsvText(self, names: list[str]) -> str:
-        routes = self._armature.route_info_route_settings.routes
+        routes = self._context.armature.route_info_route_settings.routes
 
         csv = ""
         for route in routes:

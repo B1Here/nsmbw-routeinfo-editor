@@ -1,3 +1,4 @@
+import bpy
 import re
 from typing import TypeGuard, TypeVar
 
@@ -17,3 +18,10 @@ def isKeyPoint(name: str) -> bool:
 
 def isPoint(name: str) -> bool:
     return isLevelPoint(name) or isFlagPoint(name) or isKeyPoint(name)
+
+def getModeSpecificBones(context: bpy.types.Context):
+    if (context.object.mode == 'EDIT'):
+        return context.armature.edit_bones
+    if (context.object.mode == 'POSE'):
+        return context.armature.pose.bones
+    return context.armature.bones
