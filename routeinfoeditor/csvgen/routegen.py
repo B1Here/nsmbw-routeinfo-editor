@@ -2,6 +2,7 @@ import bpy
 from .utilities import isDefined
 from .abstractcsvgen import AbstractCsvGen
 
+
 class RouteCsvGen(AbstractCsvGen):
     def _fetchNames(self) -> list[str]:
         return list()
@@ -29,7 +30,10 @@ class RouteCsvGen(AbstractCsvGen):
 
         if bone.name.startswith("R"):
             lastChild: bpy.types.Bone = self.__getLastPointChild(bone)
-            if bone.name[1:5] != bone.children[0].name and bone.name[5:9] != lastChild.name:
+            if (
+                bone.name[1:5] != bone.children[0].name
+                and bone.name[5:9] != lastChild.name
+            ):
                 routeNames.append(f"R{lastChild.name}{bone.name[5:9]}")
 
     def __getLastPointChild(self, bone: bpy.types.Bone) -> bpy.types.Bone:

@@ -2,6 +2,7 @@ import bpy
 from abc import ABC, abstractmethod
 import re
 
+
 class AbstractCsvGen(ABC):
     def __init__(self, context: bpy.types.Context, config: dict):
         self._context = context
@@ -22,8 +23,8 @@ class AbstractCsvGen(ABC):
         return successfulFiles
 
     def _saveFile(self, content: str, path: str):
-        with open(bpy.path.abspath(path), 'wb') as file:
-            file.write(content.encode('shift_jis'))
+        with open(bpy.path.abspath(path), "wb") as file:
+            file.write(content.encode("shift_jis"))
 
     def _getWorldFromArmature(self, armature: bpy.types.Armature | None) -> str:
         if armature is None:

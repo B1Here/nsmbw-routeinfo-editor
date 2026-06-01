@@ -1,4 +1,4 @@
-from .blender import (csv, point, route, routeops)
+from .blender import csv, point, route, routeops
 import bpy
 
 bl_info = {
@@ -35,14 +35,26 @@ classes = (
     routeops.RouteInfoRouteSelectBonesOperator,
 )
 
+
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
-    bpy.types.Armature.route_info_csv_settings = bpy.props.PointerProperty(type=csv.RouteInfoCsvSettings)
-    bpy.types.Armature.route_info_route_settings = bpy.props.PointerProperty(type=route.RouteInfoRouteSettings)
-    bpy.types.Bone.route_info_point_settings = bpy.props.PointerProperty(type=point.RouteInfoPointSettings)
-    bpy.types.EditBone.route_info_point_settings = bpy.props.PointerProperty(type=point.RouteInfoPointSettings)
-    bpy.types.PoseBone.route_info_point_settings = bpy.props.PointerProperty(type=point.RouteInfoPointSettings)
+    bpy.types.Armature.route_info_csv_settings = bpy.props.PointerProperty(
+        type=csv.RouteInfoCsvSettings
+    )
+    bpy.types.Armature.route_info_route_settings = bpy.props.PointerProperty(
+        type=route.RouteInfoRouteSettings
+    )
+    bpy.types.Bone.route_info_point_settings = bpy.props.PointerProperty(
+        type=point.RouteInfoPointSettings
+    )
+    bpy.types.EditBone.route_info_point_settings = bpy.props.PointerProperty(
+        type=point.RouteInfoPointSettings
+    )
+    bpy.types.PoseBone.route_info_point_settings = bpy.props.PointerProperty(
+        type=point.RouteInfoPointSettings
+    )
+
 
 def unregister():
     del bpy.types.PoseBone.route_info_point_settings
@@ -52,5 +64,7 @@ def unregister():
     del bpy.types.Armature.route_info_csv_settings
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
+
+
 if __name__ == "__main__":
     register()

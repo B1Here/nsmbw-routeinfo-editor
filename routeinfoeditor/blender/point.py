@@ -2,46 +2,48 @@ import bpy
 
 from ..csvgen.utilities import isDefined, isFlagPoint, isLevelPoint
 
+
 class RouteInfoPointSettings(bpy.types.PropertyGroup):
     flags: bpy.props.StringProperty(
         name="Flags",
         description="Flags this point should have (comma-separated)",
         default="",
-        options=set()
-    ) # pyright: ignore[reportInvalidTypeForm]
+        options=set(),
+    )  # pyright: ignore[reportInvalidTypeForm]
 
     unlocked_levels: bpy.props.StringProperty(
         name="Unlocked Levels",
         description="Levels this level unlocks (comma-separated)",
         default="",
-        options=set()
-    ) # pyright: ignore[reportInvalidTypeForm]
+        options=set(),
+    )  # pyright: ignore[reportInvalidTypeForm]
 
     unlocked_bones: bpy.props.StringProperty(
         name="Unlocked Bones",
         description="Bones this level unlocks (comma-separated)",
         default="",
-        options=set()
-    ) # pyright: ignore[reportInvalidTypeForm]
+        options=set(),
+    )  # pyright: ignore[reportInvalidTypeForm]
 
     unlocked_levels_secret_exit: bpy.props.StringProperty(
         name="Unlocked Levels",
         description="Secret levels this level unlocks (comma-separated)",
         default="",
-        options=set()
-    ) # pyright: ignore[reportInvalidTypeForm]
+        options=set(),
+    )  # pyright: ignore[reportInvalidTypeForm]
 
     unlocked_bones_secret_exit: bpy.props.StringProperty(
         name="Unlocked Bones",
         description="Secret bones this level unlocks (comma-separated)",
         default="",
-        options=set()
-    ) # pyright: ignore[reportInvalidTypeForm]
+        options=set(),
+    )  # pyright: ignore[reportInvalidTypeForm]
+
 
 class RouteInfoPointPanel(bpy.types.Panel):
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
-    bl_options = {'DEFAULT_CLOSED'}
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_options = {"DEFAULT_CLOSED"}
     bl_idname = "ROUTEINFO_POINT_PT_bone_attrs"
     bl_label = "RouteInfo Point Data"
     bl_context = "bone"
@@ -59,9 +61,17 @@ class RouteInfoPointPanel(bpy.types.Panel):
             return
         layout.use_property_split = True
         layout.use_property_decorate = False
-        bones = context.armature.edit_bones if context.object.mode == 'EDIT' else context.armature.bones
+        bones = (
+            context.armature.edit_bones
+            if context.object.mode == "EDIT"
+            else context.armature.bones
+        )
 
-        bone = bones[context.edit_bone.name] if context.object.mode == 'EDIT' else bones[context.bone.name]
+        bone = (
+            bones[context.edit_bone.name]
+            if context.object.mode == "EDIT"
+            else bones[context.bone.name]
+        )
         if not isDefined(bone):
             return
         boneSettings = bone.route_info_point_settings
@@ -71,10 +81,11 @@ class RouteInfoPointPanel(bpy.types.Panel):
             layout.prop(boneSettings, "unlocked_levels")
             layout.prop(boneSettings, "unlocked_bones")
 
+
 class RouteInfoPointSecretPanel(bpy.types.Panel):
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
-    bl_options = {'DEFAULT_CLOSED'}
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_options = {"DEFAULT_CLOSED"}
     bl_idname = "ROUTEINFO_POINT_PT_bone_secret_attrs"
     bl_label = "Secret Exit"
     bl_parent_id = "ROUTEINFO_POINT_PT_bone_attrs"
@@ -93,9 +104,17 @@ class RouteInfoPointSecretPanel(bpy.types.Panel):
             return
         layout.use_property_split = True
         layout.use_property_decorate = False
-        bones = context.armature.edit_bones if context.object.mode == 'EDIT' else context.armature.bones
+        bones = (
+            context.armature.edit_bones
+            if context.object.mode == "EDIT"
+            else context.armature.bones
+        )
 
-        bone = bones[context.edit_bone.name] if context.object.mode == 'EDIT' else bones[context.bone.name]
+        bone = (
+            bones[context.edit_bone.name]
+            if context.object.mode == "EDIT"
+            else bones[context.bone.name]
+        )
         if not isDefined(bone):
             return
         layout.use_property_split = True

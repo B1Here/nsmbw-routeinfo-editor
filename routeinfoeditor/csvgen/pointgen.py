@@ -1,6 +1,7 @@
 from .utilities import getModeSpecificBones, isLevelPoint, isFlagPoint
 from .abstractcsvgen import AbstractCsvGen
 
+
 class PointCsvGen(AbstractCsvGen):
     def _fetchNames(self) -> list[str]:
         pointNames: list[str] = []
@@ -17,8 +18,10 @@ class PointCsvGen(AbstractCsvGen):
         for bone in names:
             routeInfoSettings = bones[bone].route_info_point_settings
 
-            csv += (f"{id},{bone},{self._csvArrayGuard(routeInfoSettings.flags)},{self._csvArrayGuard(routeInfoSettings.unlocked_levels)},{self._csvArrayGuard(routeInfoSettings.unlocked_bones)},"
-                + f",{self._csvArrayGuard(routeInfoSettings.unlocked_levels_secret_exit)},{self._csvArrayGuard(routeInfoSettings.unlocked_bones_secret_exit)},\r\n")
+            csv += (
+                f"{id},{bone},{self._csvArrayGuard(routeInfoSettings.flags)},{self._csvArrayGuard(routeInfoSettings.unlocked_levels)},{self._csvArrayGuard(routeInfoSettings.unlocked_bones)},"
+                + f",{self._csvArrayGuard(routeInfoSettings.unlocked_levels_secret_exit)},{self._csvArrayGuard(routeInfoSettings.unlocked_bones_secret_exit)},\r\n"
+            )
             id += 1
 
         return csv
@@ -27,4 +30,4 @@ class PointCsvGen(AbstractCsvGen):
         return f"pointW{world}.csv"
 
     def _csvArrayGuard(self, string: str) -> str:
-        return f'"{string}"' if "," in string else string
+        return f"\"{string}\"" if "," in string else string
