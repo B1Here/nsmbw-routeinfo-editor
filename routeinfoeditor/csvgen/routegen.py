@@ -3,7 +3,6 @@ from .utilities import isDefined
 from .abstractcsvgen import AbstractCsvGen
 
 class RouteCsvGen(AbstractCsvGen):
-
     def _fetchNames(self) -> list[str]:
         return list()
 

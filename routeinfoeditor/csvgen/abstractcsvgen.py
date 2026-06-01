@@ -3,9 +3,6 @@ from abc import ABC, abstractmethod
 import re
 
 class AbstractCsvGen(ABC):
-    _context: bpy.types.Context
-    _config: dict
-
     def __init__(self, context: bpy.types.Context, config: dict):
         self._context = context
         self._config = config
