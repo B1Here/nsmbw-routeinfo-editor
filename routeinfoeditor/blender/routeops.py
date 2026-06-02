@@ -2,7 +2,9 @@ import bpy
 
 from typing import Literal
 
-from routeinfoeditor.csvgen.utilities import __get_bones__, __is_defined__, __is_point__
+from routeinfoeditor.blender.armatureutils import __get_bones__
+from routeinfoeditor.blender.common import __is_defined__
+from routeinfoeditor.nsmbw.routeinfoutils import __is_point__
 
 
 class RouteInfoRouteAddOperator(bpy.types.Operator):
@@ -145,7 +147,9 @@ class RouteInfoRouteRefreshOperator(bpy.types.Operator):
 
         return result
 
-    def __add_route_for_bone(self, bone: bpy.types.Bone, route_names: list[str]):
+    def __add_route_for_bone(
+        self, bone: bpy.types.Bone, route_names: list[str]
+    ) -> None:
         if (
             __is_defined__(bone.children)
             and len(bone.children) > 0
@@ -155,7 +159,9 @@ class RouteInfoRouteRefreshOperator(bpy.types.Operator):
             return
         route_names.append(bone.name)
 
-    def __add_route_via_child(self, bone: bpy.types.Bone, route_names: list[str]):
+    def __add_route_via_child(
+        self, bone: bpy.types.Bone, route_names: list[str]
+    ) -> None:
         if not __is_defined__(bone.children) or len(bone.children) == 0:
             return
         bone_name = bone.name

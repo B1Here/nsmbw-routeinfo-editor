@@ -3,48 +3,16 @@ import bpy
 import re
 from typing import Literal
 
+from routeinfoeditor.blender.armatureutils import __get_bones__
+from routeinfoeditor.blender.common import __is_defined__, __split_if_contains__
 from routeinfoeditor.csvgen.abstractcsvgen import AbstractCsvGen
 from routeinfoeditor.csvgen.pointgen import PointCsvGen
 from routeinfoeditor.csvgen.routegen import RouteCsvGen
-from routeinfoeditor.csvgen.utilities import (
-    __get_bones__,
-    __is_defined__,
+from routeinfoeditor.nsmbw.routeinfodata import point_flags
+from routeinfoeditor.nsmbw.routeinfoutils import (
     __is_flag_point__,
     __is_level_point__,
 )
-
-point_flags = [
-    "stop",
-    "crossroad",
-    "dokan",
-    "scrollY",
-    "scrollA",
-    "scroll",
-    "focus",
-    "camstop",
-    "demo1",
-    "demo2",
-    "demo3",
-    "demo4",
-    "demo5",
-    "demo6",
-    "demo7",
-    "sand",
-    "ice",
-    "noshift",
-    "link1",
-    "switch",
-    "ura",
-    "scale",
-    "demostop",
-    "tilt",
-    "board",
-    "link2",
-    "link3",
-    "link4",
-    "link5",
-    "anchor",
-]
 
 
 class RouteInfoCsvGenOperator(bpy.types.Operator):
@@ -58,21 +26,12 @@ class RouteInfoCsvGenOperator(bpy.types.Operator):
     ) -> set[
         Literal["RUNNING_MODAL", "CANCELLED", "FINISHED", "PASS_THROUGH", "INTERFACE"]
     ]:
-        armature_data = context.armature
-        if not __is_defined__(armature_data):
-            self.report({"ERROR"}, "No armature found.")
-            return {"CANCELLED"}
-        csv_settings = armature_data.route_info_csv_settings
-
         classes: list[type[AbstractCsvGen]] = [RouteCsvGen, PointCsvGen]
 
         # Run each generator for each armature
         for cls in classes:
-            op = cls(
-                context,
-                {"file_path": csv_settings.file_path, "mode": context.object.mode},
-            )
-            file_name = op.run()
+            generator = cls(context)
+            file_name = generator.exec()
             if not file_name:
                 self.report(
                     {"ERROR"},
@@ -98,14 +57,13 @@ class RouteInfoDataCleanupOperator(bpy.types.Operator):
     ]:
         for bone in __get_bones__(context):
             point_settings = bone.route_info_point_settings
-            if not __is_flag_point__(bone.name) and not __is_level_point__(bone.name):
-                point_settings.flags = ""
-
             if not __is_level_point__(bone.name):
                 point_settings.unlocked_levels = ""
                 point_settings.unlocked_bones = ""
                 point_settings.unlocked_levels_secret_exit = ""
                 point_settings.unlocked_bones_secret_exit = ""
+                if not __is_flag_point__(bone.name):
+                    point_settings.flags = ""
 
         self.report({"INFO"}, "Finished cleaning up RouteInfo data.")
         return {"FINISHED"}
@@ -118,73 +76,11 @@ class RouteInfoValidateOperator(bpy.types.Operator):
     bl_label = "Validate RouteInfo Data"
 
     def execute(
-        self, context: Context
+        self, context: bpy.types.Context
     ) -> set[
         Literal["RUNNING_MODAL", "CANCELLED", "FINISHED", "PASS_THROUGH", "INTERFACE"]
     ]:
-        bone_names = list(map(lambda b: b.name, __get_bones__(context)))
-
-        warnings = 0
-        # Check that all flags on flag points and level points are valid point flags
-        for bone in filter(
-            lambda b: __is_flag_point__(b.name) or __is_level_point__(b.name),
-            __get_bones__(context),
-        ):
-            point_settings = bone.route_info_point_settings
-            for flag in filter(lambda f: f.strip(), point_settings.flags.split(",")):
-                if flag and flag not in point_flags:
-                    self.report(
-                        {"WARNING"},
-                        f'Bone {bone.name} has a flag "{flag}" that is not a valid point flag.',
-                    )
-                    warnings += 1
-
-        # Check that all unlocked levels and bones on level points reference existing bones
-        for bone in filter(
-            lambda b: __is_level_point__(b.name), __get_bones__(context)
-        ):
-            point_settings = bone.route_info_point_settings
-            for level in filter(
-                lambda l: l.strip() != "", point_settings.unlocked_levels.split(",")
-            ):
-                if level and level not in bone_names:
-                    self.report(
-                        {"WARNING"},
-                        f"Bone {bone.name} has an unlocked level {level} that does not exist.",
-                    )
-                    warnings += 1
-
-            for bone_name in filter(
-                lambda b: b.strip() != "", point_settings.unlocked_bones.split(",")
-            ):
-                if bone_name and bone_name not in bone_names:
-                    self.report(
-                        {"WARNING"},
-                        f"Bone {bone.name} has an unlocked bone {bone_name} that does not exist.",
-                    )
-                    warnings += 1
-
-            for level in filter(
-                lambda l: l.strip() != "",
-                point_settings.unlocked_levels_secret_exit.split(","),
-            ):
-                if level and level not in bone_names:
-                    self.report(
-                        {"WARNING"},
-                        f"Bone {bone.name} has an unlocked secret exit level {level} that does not exist.",
-                    )
-                    warnings += 1
-
-            for bone_name in filter(
-                lambda b: b.strip() != "",
-                point_settings.unlocked_bones_secret_exit.split(","),
-            ):
-                if bone_name and bone_name not in bone_names:
-                    self.report(
-                        {"WARNING"},
-                        f"Bone {bone.name} has an unlocked secret exit bone {bone_name} that does not exist.",
-                    )
-                    warnings += 1
+        warnings = self.__validate_point_data(context)
 
         if warnings > 0:
             self.report(
@@ -197,6 +93,66 @@ class RouteInfoValidateOperator(bpy.types.Operator):
             )
         return {"FINISHED"}
 
+    def __validate_point_data(self, context: bpy.types.Context) -> int:
+        bones = __get_bones__(context)
+        bone_names = list(map(lambda b: b.name, bones))
+
+        warnings = 0
+        # Check that all flags on flag points and level points are valid point flags
+        for bone in filter(
+            lambda b: __is_flag_point__(b.name) or __is_level_point__(b.name),
+            bones,
+        ):
+            point_settings = bone.route_info_point_settings
+            for flag in __split_if_contains__(point_settings.flags, ","):
+                if flag and flag not in point_flags:
+                    self.report(
+                        {"WARNING"},
+                        f'Bone {bone.name} has a flag "{flag}" that is not a valid point flag.',
+                    )
+                    warnings += 1
+
+        # Check that all unlocked levels and bones on level points reference existing bones
+        for bone in filter(lambda b: __is_level_point__(b.name), bones):
+            point_settings = bone.route_info_point_settings
+            for level in __split_if_contains__(point_settings.unlocked_levels, ","):
+                if level and level not in bone_names:
+                    self.report(
+                        {"WARNING"},
+                        f"Bone {bone.name} has an unlocked level {level} that does not exist.",
+                    )
+                    warnings += 1
+
+            for bone_name in __split_if_contains__(point_settings.unlocked_bones, ","):
+                if bone_name and bone_name not in bone_names:
+                    self.report(
+                        {"WARNING"},
+                        f"Bone {bone.name} has an unlocked bone {bone_name} that does not exist.",
+                    )
+                    warnings += 1
+
+            for level in __split_if_contains__(
+                point_settings.unlocked_levels_secret_exit, ","
+            ):
+                if level and level not in bone_names:
+                    self.report(
+                        {"WARNING"},
+                        f"Bone {bone.name} has an unlocked secret exit level {level} that does not exist.",
+                    )
+                    warnings += 1
+
+            for bone_name in __split_if_contains__(
+                point_settings.unlocked_bones_secret_exit, ","
+            ):
+                if bone_name and bone_name not in bone_names:
+                    self.report(
+                        {"WARNING"},
+                        f"Bone {bone.name} has an unlocked secret exit bone {bone_name} that does not exist.",
+                    )
+                    warnings += 1
+
+        return warnings
+
 
 class RouteInfoCsvSettings(bpy.types.PropertyGroup):
     file_path: bpy.props.StringProperty(
@@ -205,7 +161,7 @@ class RouteInfoCsvSettings(bpy.types.PropertyGroup):
         default="//",
         subtype="DIR_PATH",
         options=set(),
-    )  # pyright: ignore[reportInvalidTypeForm]
+    )
 
 
 class RouteInfoCsvPanel(bpy.types.Panel):
@@ -227,7 +183,7 @@ class RouteInfoCsvPanel(bpy.types.Panel):
             )
         return False
 
-    def draw(self, context):
+    def draw(self, context) -> None:
         layout = self.layout
         if not __is_defined__(layout):
             return

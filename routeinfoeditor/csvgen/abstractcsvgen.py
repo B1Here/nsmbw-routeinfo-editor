@@ -5,18 +5,17 @@ import re
 
 
 class AbstractCsvGen(ABC):
-    def __init__(self, context: bpy.types.Context, config: dict):
+    def __init__(self, context: bpy.types.Context):
         self._context = context
-        self._config = config
 
-    def run(self) -> str:
+    def exec(self) -> str:
         world = self._get_world_from_armature(self._context.armature)
-        csv_data = self._create_csv(self._fetch_names())
-        path: str = self._config.get("file_path", "//")
+        csv = self._create_csv()
+        path: str = self._context.armature.route_info_csv_settings.file_path
         if not path.endswith("/"):
             path += "/"
         file_name = f"{path}{self._get_file_name(world)}"
-        self._save_file(csv_data, file_name)
+        self._save_file(csv, file_name)
 
         return file_name
 
@@ -33,11 +32,7 @@ class AbstractCsvGen(ABC):
         return "0"
 
     @abstractmethod
-    def _fetch_names(self) -> list[str]:
-        pass
-
-    @abstractmethod
-    def _create_csv(self, names: list[str]) -> str:
+    def _create_csv(self) -> str:
         pass
 
     @abstractmethod

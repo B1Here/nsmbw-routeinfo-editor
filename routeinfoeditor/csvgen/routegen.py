@@ -1,12 +1,9 @@
+from routeinfoeditor.blender.common import __is_defined__
 from routeinfoeditor.csvgen.abstractcsvgen import AbstractCsvGen
-from routeinfoeditor.csvgen.utilities import __is_defined__
 
 
 class RouteCsvGen(AbstractCsvGen):
-    def _fetch_names(self) -> list[str]:
-        return list()
-
-    def _create_csv(self, names: list[str]) -> str:
+    def _create_csv(self) -> str:
         routes = self._context.armature.route_info_route_settings.routes
 
         csv = ""

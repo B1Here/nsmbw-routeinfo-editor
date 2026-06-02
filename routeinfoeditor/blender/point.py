@@ -1,7 +1,8 @@
 import bpy
 
-from routeinfoeditor.csvgen.utilities import (
-    __is_defined__,
+from routeinfoeditor.blender.armatureutils import __get_bone__
+from routeinfoeditor.blender.common import __is_defined__
+from routeinfoeditor.nsmbw.routeinfoutils import (
     __is_flag_point__,
     __is_level_point__,
 )
@@ -13,35 +14,35 @@ class RouteInfoPointSettings(bpy.types.PropertyGroup):
         description="Flags this point should have (comma-separated)",
         default="",
         options=set(),
-    )  # pyright: ignore[reportInvalidTypeForm]
+    )
 
     unlocked_levels: bpy.props.StringProperty(
         name="Unlocked Levels",
         description="Levels this level unlocks (comma-separated)",
         default="",
         options=set(),
-    )  # pyright: ignore[reportInvalidTypeForm]
+    )
 
     unlocked_bones: bpy.props.StringProperty(
         name="Unlocked Bones",
         description="Bones this level unlocks (comma-separated)",
         default="",
         options=set(),
-    )  # pyright: ignore[reportInvalidTypeForm]
+    )
 
     unlocked_levels_secret_exit: bpy.props.StringProperty(
         name="Unlocked Levels",
         description="Secret levels this level unlocks (comma-separated)",
         default="",
         options=set(),
-    )  # pyright: ignore[reportInvalidTypeForm]
+    )
 
     unlocked_bones_secret_exit: bpy.props.StringProperty(
         name="Unlocked Bones",
         description="Secret bones this level unlocks (comma-separated)",
         default="",
         options=set(),
-    )  # pyright: ignore[reportInvalidTypeForm]
+    )
 
 
 class RouteInfoPointPanel(bpy.types.Panel):
@@ -54,30 +55,24 @@ class RouteInfoPointPanel(bpy.types.Panel):
 
     @classmethod
     def poll(cls, context) -> bool:
-        bone = context.bone if context.bone else context.edit_bone
-        if bone:
-            return __is_level_point__(bone.name) or __is_flag_point__(bone.name)
-        return False
+        bone = __get_bone__(context)
+        if not __is_defined__(bone):
+            return False
 
-    def draw(self, context):
+        return __is_level_point__(bone.name) or __is_flag_point__(bone.name)
+
+    def draw(self, context) -> None:
         layout = self.layout
         if not __is_defined__(layout):
             return
-        layout.use_property_split = True
-        layout.use_property_decorate = False
-        bones = (
-            context.armature.edit_bones
-            if context.object.mode == "EDIT"
-            else context.armature.bones
-        )
 
-        bone = (
-            bones[context.edit_bone.name]
-            if context.object.mode == "EDIT"
-            else bones[context.bone.name]
-        )
+        bone = __get_bone__(context)
         if not __is_defined__(bone):
             return
+
+        layout.use_property_split = True
+        layout.use_property_decorate = False
+
         point_settings = bone.route_info_point_settings
         layout.prop(bone, "name")
         layout.prop(point_settings, "flags")
@@ -97,32 +92,24 @@ class RouteInfoPointSecretPanel(bpy.types.Panel):
 
     @classmethod
     def poll(cls, context) -> bool:
-        bone = context.bone if context.bone else context.edit_bone
-        if bone:
-            return __is_level_point__(bone.name)
-        return False
+        bone = __get_bone__(context)
+        if not __is_defined__(bone):
+            return False
 
-    def draw(self, context):
+        return __is_level_point__(bone.name)
+
+    def draw(self, context) -> None:
         layout = self.layout
         if not __is_defined__(layout):
             return
-        layout.use_property_split = True
-        layout.use_property_decorate = False
-        bones = (
-            context.armature.edit_bones
-            if context.object.mode == "EDIT"
-            else context.armature.bones
-        )
 
-        bone = (
-            bones[context.edit_bone.name]
-            if context.object.mode == "EDIT"
-            else bones[context.bone.name]
-        )
+        bone = __get_bone__(context)
         if not __is_defined__(bone):
             return
+
         layout.use_property_split = True
         layout.use_property_decorate = False
+
         point_settings = bone.route_info_point_settings
         layout.prop(point_settings, "unlocked_levels_secret_exit")
         layout.prop(point_settings, "unlocked_bones_secret_exit")
