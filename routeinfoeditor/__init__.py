@@ -1,4 +1,4 @@
-from .blender import csv, point, route, routeops
+from routeinfoeditor.blender import csv, point, route, routeops
 import bpy
 
 bl_info = {

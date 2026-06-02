@@ -1,6 +1,6 @@
 import bpy
 
-from ..csvgen.utilities import isDefined, isFlagPoint, isLevelPoint
+from routeinfoeditor.csvgen.utilities import __is_defined__, __is_flag_point__, __is_level_point__
 
 
 class RouteInfoPointSettings(bpy.types.PropertyGroup):
@@ -52,12 +52,12 @@ class RouteInfoPointPanel(bpy.types.Panel):
     def poll(cls, context) -> bool:
         bone = context.bone if context.bone else context.edit_bone
         if bone:
-            return isLevelPoint(bone.name) or isFlagPoint(bone.name)
+            return __is_level_point__(bone.name) or __is_flag_point__(bone.name)
         return False
 
     def draw(self, context):
         layout = self.layout
-        if not isDefined(layout):
+        if not __is_defined__(layout):
             return
         layout.use_property_split = True
         layout.use_property_decorate = False
@@ -72,14 +72,14 @@ class RouteInfoPointPanel(bpy.types.Panel):
             if context.object.mode == "EDIT"
             else bones[context.bone.name]
         )
-        if not isDefined(bone):
+        if not __is_defined__(bone):
             return
-        boneSettings = bone.route_info_point_settings
+        point_settings = bone.route_info_point_settings
         layout.prop(bone, "name")
-        layout.prop(boneSettings, "flags")
-        if isLevelPoint(bone.name):
-            layout.prop(boneSettings, "unlocked_levels")
-            layout.prop(boneSettings, "unlocked_bones")
+        layout.prop(point_settings, "flags")
+        if __is_level_point__(bone.name):
+            layout.prop(point_settings, "unlocked_levels")
+            layout.prop(point_settings, "unlocked_bones")
 
 
 class RouteInfoPointSecretPanel(bpy.types.Panel):
@@ -95,12 +95,12 @@ class RouteInfoPointSecretPanel(bpy.types.Panel):
     def poll(cls, context) -> bool:
         bone = context.bone if context.bone else context.edit_bone
         if bone:
-            return isLevelPoint(bone.name)
+            return __is_level_point__(bone.name)
         return False
 
     def draw(self, context):
         layout = self.layout
-        if not isDefined(layout):
+        if not __is_defined__(layout):
             return
         layout.use_property_split = True
         layout.use_property_decorate = False
@@ -115,10 +115,10 @@ class RouteInfoPointSecretPanel(bpy.types.Panel):
             if context.object.mode == "EDIT"
             else bones[context.bone.name]
         )
-        if not isDefined(bone):
+        if not __is_defined__(bone):
             return
         layout.use_property_split = True
         layout.use_property_decorate = False
-        boneSettings = bone.route_info_point_settings
-        layout.prop(boneSettings, "unlocked_levels_secret_exit")
-        layout.prop(boneSettings, "unlocked_bones_secret_exit")
+        point_settings = bone.route_info_point_settings
+        layout.prop(point_settings, "unlocked_levels_secret_exit")
+        layout.prop(point_settings, "unlocked_bones_secret_exit")

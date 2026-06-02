@@ -1,6 +1,6 @@
 import bpy
 import re
-from ..csvgen.utilities import isDefined
+from routeinfoeditor.csvgen.utilities import __is_defined__
 
 
 class RouteInfoRoutesList(bpy.types.UIList):
@@ -81,9 +81,9 @@ class RouteInfoRoutePanel(bpy.types.Panel):
     def poll(cls, context) -> bool:
         pattern = re.compile(r"^CS_W\d[ab]?$")
         if (
-            isDefined(context.object)
+            __is_defined__(context.object)
             and context.object.type == "ARMATURE"
-            and isDefined(context.armature)
+            and __is_defined__(context.armature)
         ):
             return (
                 pattern.match(context.object.name) is not None
@@ -94,21 +94,21 @@ class RouteInfoRoutePanel(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        if not isDefined(layout):
+        if not __is_defined__(layout):
             return
         layout.use_property_split = True
         layout.use_property_decorate = False
         armature = context.armature
-        if not isDefined(armature):
+        if not __is_defined__(armature):
             return
-        armatureSettings = armature.route_info_route_settings
+        route_settings = armature.route_info_route_settings
         row = layout.row()
         row.template_list(
             RouteInfoRoutesList.bl_idname,
             "",
-            armatureSettings,
+            route_settings,
             "routes",
-            armatureSettings,
+            route_settings,
             "active_route_index",
         )
         column = row.column(align=True)
@@ -120,10 +120,10 @@ class RouteInfoRoutePanel(bpy.types.Panel):
         column = row.column()
         column.enabled = ["EDIT", "POSE"].__contains__(context.active_object.mode)
         column.operator("routeinfo.route_select_bones", icon="GROUP_BONE")
-        routeSettings = armature.route_info_route_settings
-        index = routeSettings.active_route_index
-        if index < 0 or index >= len(routeSettings.routes):
+        route_settings = armature.route_info_route_settings
+        index = route_settings.active_route_index
+        if index < 0 or index >= len(route_settings.routes):
             return
-        routeDetails = routeSettings.routes[index]
-        layout.prop(routeDetails, "animation")
-        layout.prop(routeDetails, "flags")
+        route_details = route_settings.routes[index]
+        layout.prop(route_details, "animation")
+        layout.prop(route_details, "flags")

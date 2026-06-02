@@ -1,6 +1,6 @@
 import bpy
 from typing import Literal
-from ..csvgen.utilities import getModeSpecificBones, isDefined, isPoint
+from routeinfoeditor.csvgen.utilities import __get_bones__, __is_defined__, __is_point__
 
 
 class RouteInfoRouteAddOperator(bpy.types.Operator):
@@ -13,12 +13,12 @@ class RouteInfoRouteAddOperator(bpy.types.Operator):
         Literal["RUNNING_MODAL", "CANCELLED", "FINISHED", "PASS_THROUGH", "INTERFACE"]
     ]:
         armature = context.armature
-        if not isDefined(armature):
+        if not __is_defined__(armature):
             self.report({"ERROR"}, "No armature found")
             return {"CANCELLED"}
-        routeSettings = armature.route_info_route_settings
-        routeSettings.routes.add().name = "New Route"
-        routeSettings.active_route_index = len(routeSettings.routes) - 1
+        route_settings = armature.route_info_route_settings
+        route_settings.routes.add().name = "New Route"
+        route_settings.active_route_index = len(route_settings.routes) - 1
         return {"FINISHED"}
 
 
@@ -32,14 +32,14 @@ class RouteInfoRouteRemoveOperator(bpy.types.Operator):
         Literal["RUNNING_MODAL", "CANCELLED", "FINISHED", "PASS_THROUGH", "INTERFACE"]
     ]:
         armature = context.armature
-        if not isDefined(armature):
+        if not __is_defined__(armature):
             self.report({"ERROR"}, "No armature found")
             return {"CANCELLED"}
-        routeSettings = armature.route_info_route_settings
-        if routeSettings.active_route_index < len(routeSettings.routes):
-            routeSettings.routes.remove(routeSettings.active_route_index)
-            routeSettings.active_route_index = max(
-                0, routeSettings.active_route_index - 1
+        route_settings = armature.route_info_route_settings
+        if route_settings.active_route_index < len(route_settings.routes):
+            route_settings.routes.remove(route_settings.active_route_index)
+            route_settings.active_route_index = max(
+                0, route_settings.active_route_index - 1
             )
         return {"FINISHED"}
 
@@ -76,14 +76,14 @@ class RouteInfoRouteMoveUpOperator(bpy.types.Operator):
         Literal["RUNNING_MODAL", "CANCELLED", "FINISHED", "PASS_THROUGH", "INTERFACE"]
     ]:
         armature = context.armature
-        if not isDefined(armature):
+        if not __is_defined__(armature):
             self.report({"ERROR"}, "No armature found")
             return {"CANCELLED"}
-        routeSettings = armature.route_info_route_settings
-        index = routeSettings.active_route_index
-        if index > 0 and index < len(routeSettings.routes):
-            routeSettings.routes.move(index, index - 1)
-            routeSettings.active_route_index = index - 1
+        route_settings = armature.route_info_route_settings
+        index = route_settings.active_route_index
+        if index > 0 and index < len(route_settings.routes):
+            route_settings.routes.move(index, index - 1)
+            route_settings.active_route_index = index - 1
         return {"FINISHED"}
 
 
@@ -97,14 +97,14 @@ class RouteInfoRouteMoveDownOperator(bpy.types.Operator):
         Literal["RUNNING_MODAL", "CANCELLED", "FINISHED", "PASS_THROUGH", "INTERFACE"]
     ]:
         armature = context.armature
-        if not isDefined(armature):
+        if not __is_defined__(armature):
             self.report({"ERROR"}, "No armature found")
             return {"CANCELLED"}
-        routeSettings = armature.route_info_route_settings
-        index = routeSettings.active_route_index
-        if index >= 0 and index < len(routeSettings.routes) - 1:
-            routeSettings.routes.move(index, index + 1)
-            routeSettings.active_route_index = index + 1
+        route_settings = armature.route_info_route_settings
+        index = route_settings.active_route_index
+        if index >= 0 and index < len(route_settings.routes) - 1:
+            route_settings.routes.move(index, index + 1)
+            route_settings.active_route_index = index + 1
         return {"FINISHED"}
 
 
@@ -118,84 +118,84 @@ class RouteInfoRouteRefreshOperator(bpy.types.Operator):
         Literal["RUNNING_MODAL", "CANCELLED", "FINISHED", "PASS_THROUGH", "INTERFACE"]
     ]:
         armature = context.armature
-        if not isDefined(armature):
+        if not __is_defined__(armature):
             self.report({"ERROR"}, "No armature found")
             return {"CANCELLED"}
-        routeSettings = armature.route_info_route_settings
+        route_settings = armature.route_info_route_settings
 
-        bones = getModeSpecificBones(context)
-        newRouteNames = self._fetchNames(bones)
+        bones = __get_bones__(context)
+        new_route_names = self._fetch_names(bones)
 
         # Keep routes where both bones still exist, remove routes where either bone doesn't exist, and add routes for new bone pairs
-        indiciesToRemove = []
-        for i in range(len(routeSettings.routes)):
-            route = routeSettings.routes[i]
-            if route.name not in newRouteNames:
-                indiciesToRemove.append(i)
+        idicies_to_remove = []
+        for i in range(len(route_settings.routes)):
+            route = route_settings.routes[i]
+            if route.name not in new_route_names:
+                idicies_to_remove.append(i)
 
-        for i in reversed(indiciesToRemove):
-            routeSettings.routes.remove(i)
-        bones = getModeSpecificBones(context)
-        existingRouteNames = {route.name for route in routeSettings.routes}
+        for i in reversed(idicies_to_remove):
+            route_settings.routes.remove(i)
+        bones = __get_bones__(context)
+        existing_route_names = {route.name for route in route_settings.routes}
 
         if bones:
-            for boneName in newRouteNames:
-                if boneName not in existingRouteNames:
-                    routeSettings.routes.add().name = boneName
+            for bone_name in new_route_names:
+                if bone_name not in existing_route_names:
+                    route_settings.routes.add().name = bone_name
 
         self.report(
             {"INFO"},
-            f"Routes refreshed, {len(indiciesToRemove)} removed, {len(routeSettings.routes) - len(existingRouteNames)} added.",
+            f"Routes refreshed, {len(idicies_to_remove)} removed, {len(route_settings.routes) - len(existing_route_names)} added.",
         )
         return {"FINISHED"}
 
-    def _fetchNames(self, bones) -> list[str]:
-        routeBones: list[bpy.types.Bone] = []
+    def _fetch_names(self, bones) -> list[str]:
+        route_bones: list[bpy.types.Bone] = []
         for bone in bones:
             if (
                 bone.name.startswith("R")
-                and isPoint(bone.name[1:5])
-                and isPoint(bone.name[5:9])
+                and __is_point__(bone.name[1:5])
+                and __is_point__(bone.name[5:9])
             ):
-                routeBones.append(bone)
+                route_bones.append(bone)
 
         result: list[str] = []
-        for bone in routeBones:
-            self.__addRouteForBone(bone, result)
+        for bone in route_bones:
+            self.__add_route_for_bone(bone, result)
 
         return result
 
-    def __addRouteForBone(self, bone: bpy.types.Bone, routeNames: list[str]):
+    def __add_route_for_bone(self, bone: bpy.types.Bone, route_names: list[str]):
         if (
-            isDefined(bone.children)
+            __is_defined__(bone.children)
             and len(bone.children) > 0
-            and filter(lambda child: isPoint(child.name), bone.children)
+            and filter(lambda child: __is_point__(child.name), bone.children)
         ):
-            self.__addRouteViaChild(bone, routeNames)
+            self.__add_route_via_child(bone, route_names)
             return
-        routeNames.append(bone.name)
+        route_names.append(bone.name)
 
-    def __addRouteViaChild(self, bone: bpy.types.Bone, routeNames: list[str]):
-        if not isDefined(bone.children) or len(bone.children) == 0:
+    def __add_route_via_child(self, bone: bpy.types.Bone, route_names: list[str]):
+        if not __is_defined__(bone.children) or len(bone.children) == 0:
             return
-        boneName = bone.name
-        if boneName.startswith("R"):
-            boneName = boneName[1:5]
-        routeNames.append(f"R{boneName}{bone.children[0].name}")
-        self.__addRouteViaChild(bone.children[0], routeNames)
+        bone_name = bone.name
+        if bone_name.startswith("R"):
+            bone_name = bone_name[1:5]
+        route_names.append(f"R{bone_name}{bone.children[0].name}")
+        self.__add_route_via_child(bone.children[0], route_names)
 
         if bone.name.startswith("R"):
-            lastChild: bpy.types.Bone = self.__getLastPointChild(bone)
+            last_child: bpy.types.Bone = self.__get_last_point_child(bone)
             if (
                 bone.name[1:5] != bone.children[0].name
-                and bone.name[5:9] != lastChild.name
+                and bone.name[5:9] != last_child.name
             ):
-                routeNames.append(f"R{lastChild.name}{bone.name[5:9]}")
+                route_names.append(f"R{last_child.name}{bone.name[5:9]}")
 
-    def __getLastPointChild(self, bone: bpy.types.Bone) -> bpy.types.Bone:
-        if not isDefined(bone.children) or len(bone.children) == 0:
+    def __get_last_point_child(self, bone: bpy.types.Bone) -> bpy.types.Bone:
+        if not __is_defined__(bone.children) or len(bone.children) == 0:
             return bone
-        return self.__getLastPointChild(bone.children[0])
+        return self.__get_last_point_child(bone.children[0])
 
 
 class RouteInfoRouteSelectBonesOperator(bpy.types.Operator):
@@ -208,23 +208,23 @@ class RouteInfoRouteSelectBonesOperator(bpy.types.Operator):
         Literal["RUNNING_MODAL", "CANCELLED", "FINISHED", "PASS_THROUGH", "INTERFACE"]
     ]:
         armature = context.armature
-        if not isDefined(armature) or not isDefined(context.object):
+        if not __is_defined__(armature) or not __is_defined__(context.object):
             self.report({"ERROR"}, "No armature found")
             return {"CANCELLED"}
-        routeSettings = armature.route_info_route_settings
-        index = routeSettings.active_route_index
-        if index < 0 or index >= len(routeSettings.routes):
+        route_settings = armature.route_info_route_settings
+        index = route_settings.active_route_index
+        if index < 0 or index >= len(route_settings.routes):
             self.report({"ERROR"}, "No route selected")
             return {"CANCELLED"}
-        routeName: str = routeSettings.routes[index].name
-        bonesToSelect: list[bpy.types.Bone] = [
-            bone for bone in armature.bones if routeName.__contains__(bone.name)
+        route_name: str = route_settings.routes[index].name
+        bones_to_select: list[bpy.types.Bone] = [
+            bone for bone in armature.bones if route_name.__contains__(bone.name)
         ]
 
         if context.object.mode == "POSE":
             for bone in context.object.pose.bones:
                 selectable = (
-                    len(list(filter(lambda b: b.name == bone.name, bonesToSelect))) > 0
+                    len(list(filter(lambda b: b.name == bone.name, bones_to_select))) > 0
                 )
                 bone.bone.select = selectable
             if (
@@ -238,7 +238,7 @@ class RouteInfoRouteSelectBonesOperator(bpy.types.Operator):
         elif context.object.mode == "EDIT":
             for bone in armature.edit_bones:
                 selectable = (
-                    len(list(filter(lambda b: b.name == bone.name, bonesToSelect))) > 0
+                    len(list(filter(lambda b: b.name == bone.name, bones_to_select))) > 0
                 )
                 bone.select = selectable
                 bone.select_head = selectable

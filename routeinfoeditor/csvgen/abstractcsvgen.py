@@ -9,21 +9,21 @@ class AbstractCsvGen(ABC):
         self._config = config
 
     def run(self) -> str:
-        world = self._getWorldFromArmature(self._context.armature)
-        csvData = self._createCsvText(self._fetchNames())
-        path: str = self._config.get("filePath", "//")
+        world = self._get_world_from_armature(self._context.armature)
+        csv_data = self._create_csv(self._fetch_names())
+        path: str = self._config.get("file_path", "//")
         if not path.endswith("/"):
             path += "/"
-        fileName = f"{path}{self._getFileName(world)}"
-        self._saveFile(csvData, fileName)
+        file_name = f"{path}{self._get_file_name(world)}"
+        self._save_file(csv_data, file_name)
 
-        return fileName
+        return file_name
 
-    def _saveFile(self, content: str, path: str) -> None:
+    def _save_file(self, content: str, path: str) -> None:
         with open(bpy.path.abspath(path), "wb") as file:
             file.write(content.encode("shift_jis"))
 
-    def _getWorldFromArmature(self, armature: bpy.types.Armature | None) -> str:
+    def _get_world_from_armature(self, armature: bpy.types.Armature | None) -> str:
         if armature is None:
             return "0"
         match = re.match(r"^CS_W(\d[ab]?)$", armature.name)
@@ -32,13 +32,13 @@ class AbstractCsvGen(ABC):
         return "0"
 
     @abstractmethod
-    def _fetchNames(self) -> list[str]:
+    def _fetch_names(self) -> list[str]:
         pass
 
     @abstractmethod
-    def _createCsvText(self, names: list[str]) -> str:
+    def _create_csv(self, names: list[str]) -> str:
         pass
 
     @abstractmethod
-    def _getFileName(self, world: str) -> str:
+    def _get_file_name(self, world: str) -> str:
         pass
