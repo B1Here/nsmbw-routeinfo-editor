@@ -1,5 +1,7 @@
 import bpy
+
 from typing import Literal
+
 from routeinfoeditor.csvgen.utilities import __get_bones__, __is_defined__, __is_point__
 
 
@@ -202,7 +204,8 @@ class RouteInfoRouteSelectBonesOperator(bpy.types.Operator):
         if context.object.mode == "POSE":
             for bone in context.object.pose.bones:
                 selectable = (
-                    len(list(filter(lambda b: b.name == bone.name, bones_to_select))) > 0
+                    len(list(filter(lambda b: b.name == bone.name, bones_to_select)))
+                    > 0
                 )
                 bone.bone.select = selectable
             if (
@@ -216,7 +219,8 @@ class RouteInfoRouteSelectBonesOperator(bpy.types.Operator):
         elif context.object.mode == "EDIT":
             for bone in armature.edit_bones:
                 selectable = (
-                    len(list(filter(lambda b: b.name == bone.name, bones_to_select))) > 0
+                    len(list(filter(lambda b: b.name == bone.name, bones_to_select)))
+                    > 0
                 )
                 bone.select = selectable
                 bone.select_head = selectable

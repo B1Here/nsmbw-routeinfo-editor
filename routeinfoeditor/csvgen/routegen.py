@@ -1,5 +1,5 @@
-from routeinfoeditor.csvgen.utilities import __is_defined__
 from routeinfoeditor.csvgen.abstractcsvgen import AbstractCsvGen
+from routeinfoeditor.csvgen.utilities import __is_defined__
 
 
 class RouteCsvGen(AbstractCsvGen):

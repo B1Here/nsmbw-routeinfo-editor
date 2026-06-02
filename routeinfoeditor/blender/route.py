@@ -1,5 +1,7 @@
 import bpy
+
 import re
+
 from routeinfoeditor.csvgen.utilities import __is_defined__
 
 

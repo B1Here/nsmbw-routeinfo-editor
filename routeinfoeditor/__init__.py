@@ -1,5 +1,6 @@
-from routeinfoeditor.blender import csv, point, route, routeops
 import bpy
+
+from routeinfoeditor.blender import csv, point, route, routeops
 
 bl_info = {
     "name": "RouteInfo CSV Editor",

@@ -1,5 +1,9 @@
-from routeinfoeditor.csvgen.utilities import __get_bones__, __is_level_point__, __is_flag_point__
 from routeinfoeditor.csvgen.abstractcsvgen import AbstractCsvGen
+from routeinfoeditor.csvgen.utilities import (
+    __get_bones__,
+    __is_level_point__,
+    __is_flag_point__,
+)
 
 
 class PointCsvGen(AbstractCsvGen):
@@ -30,4 +34,4 @@ class PointCsvGen(AbstractCsvGen):
         return f"pointW{world}.csv"
 
     def _csv_array_guard(self, string: str) -> str:
-        return f"\"{string}\"" if "," in string else string
+        return f'"{string}"' if "," in string else string

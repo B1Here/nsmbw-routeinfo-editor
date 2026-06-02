@@ -1,18 +1,17 @@
 import bpy
-from bpy.types import Context
 
 import re
 from typing import Literal
 
+from routeinfoeditor.csvgen.abstractcsvgen import AbstractCsvGen
+from routeinfoeditor.csvgen.pointgen import PointCsvGen
+from routeinfoeditor.csvgen.routegen import RouteCsvGen
 from routeinfoeditor.csvgen.utilities import (
     __get_bones__,
     __is_defined__,
     __is_flag_point__,
     __is_level_point__,
 )
-from routeinfoeditor.csvgen.abstractcsvgen import AbstractCsvGen
-from routeinfoeditor.csvgen.routegen import RouteCsvGen
-from routeinfoeditor.csvgen.pointgen import PointCsvGen
 
 point_flags = [
     "stop",
@@ -93,7 +92,7 @@ class RouteInfoDataCleanupOperator(bpy.types.Operator):
     bl_label = "Cleanup Non-Point Data"
 
     def execute(
-        self, context: Context
+        self, context: bpy.types.Context
     ) -> set[
         Literal["RUNNING_MODAL", "CANCELLED", "FINISHED", "PASS_THROUGH", "INTERFACE"]
     ]:

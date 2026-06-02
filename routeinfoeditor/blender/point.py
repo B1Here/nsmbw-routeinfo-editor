@@ -1,6 +1,10 @@
 import bpy
 
-from routeinfoeditor.csvgen.utilities import __is_defined__, __is_flag_point__, __is_level_point__
+from routeinfoeditor.csvgen.utilities import (
+    __is_defined__,
+    __is_flag_point__,
+    __is_level_point__,
+)
 
 
 class RouteInfoPointSettings(bpy.types.PropertyGroup):
