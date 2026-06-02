@@ -1,7 +1,6 @@
-from typing import Literal
-
 import bpy
 import re
+from typing import Literal
 
 from bpy.types import Context
 from ..csvgen.utilities import (
@@ -56,7 +55,9 @@ class RouteInfoCsvGenOperator(bpy.types.Operator):
 
     def execute(
         self, context: bpy.types.Context
-    ):  # pyright: ignore[reportIncompatibleMethodOverride]
+    ) -> set[
+        Literal["RUNNING_MODAL", "CANCELLED", "FINISHED", "PASS_THROUGH", "INTERFACE"]
+    ]:
         armatureData = context.armature
         if not isDefined(armatureData):
             self.report({"ERROR"}, "No armature found.")
@@ -70,15 +71,14 @@ class RouteInfoCsvGenOperator(bpy.types.Operator):
             op = cls(
                 context, {"filePath": riSettings.filePath, "mode": context.object.mode}
             )
-            successfulFiles = op.run()
-            if len(successfulFiles) < len([armatureData]):
+            fileName = op.run()
+            if not fileName:
                 self.report(
-                    {"WARNING"},
-                    f"Generated {len(successfulFiles)} out of {len([armatureData])} files for {cls.__name__}.",
+                    {"ERROR"},
+                    f"Failed to generate CSV file for {cls.__name__}.",
                 )
                 continue
-            for fileName in successfulFiles:
-                self.report({"INFO"}, f"Successfully generated CSV file {fileName}")
+            self.report({"INFO"}, f"Successfully generated CSV file {fileName}")
         self.report({"INFO"}, "Finished generating CSV files.")
 
         return {"FINISHED"}
@@ -145,7 +145,7 @@ class RouteInfoValidateOperator(bpy.types.Operator):
                 if flag and flag not in allFlags:
                     self.report(
                         {"WARNING"},
-                        f"Bone {bone.name} has a flag \"{flag}\" that is not a valid point flag.",
+                        f'Bone {bone.name} has a flag "{flag}" that is not a valid point flag.',
                     )
                     warningCount += 1
 

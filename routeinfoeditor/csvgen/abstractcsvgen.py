@@ -8,9 +8,7 @@ class AbstractCsvGen(ABC):
         self._context = context
         self._config = config
 
-    def run(self) -> list[str]:
-        successfulFiles: list[str] = []
-
+    def run(self) -> str:
         world = self._getWorldFromArmature(self._context.armature)
         csvData = self._createCsvText(self._fetchNames())
         path: str = self._config.get("filePath", "//")
@@ -18,11 +16,10 @@ class AbstractCsvGen(ABC):
             path += "/"
         fileName = f"{path}{self._getFileName(world)}"
         self._saveFile(csvData, fileName)
-        successfulFiles.append(fileName)
 
-        return successfulFiles
+        return fileName
 
-    def _saveFile(self, content: str, path: str):
+    def _saveFile(self, content: str, path: str) -> None:
         with open(bpy.path.abspath(path), "wb") as file:
             file.write(content.encode("shift_jis"))
 
