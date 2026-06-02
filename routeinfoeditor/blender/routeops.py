@@ -44,28 +44,6 @@ class RouteInfoRouteRemoveOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class RouteInfoRouteDuplicateOperator(bpy.types.Operator):
-    bl_idname = "routeinfo.duplicate_route"
-    bl_label = "Duplicate Route"
-
-    def execute(
-        self, context: bpy.types.Context
-    ) -> set[
-        Literal["RUNNING_MODAL", "CANCELLED", "FINISHED", "PASS_THROUGH", "INTERFACE"]
-    ]:
-        armature = context.armature
-        if not isDefined(armature):
-            self.report({"ERROR"}, "No armature found")
-            return {"CANCELLED"}
-        routeSettings = armature.route_info_route_settings
-        if routeSettings.active_route_index < len(routeSettings.routes):
-            routeToDuplicate = routeSettings.routes[routeSettings.active_route_index]
-            newRoute = routeSettings.routes.add()
-            newRoute.name = f"{routeToDuplicate.name} Copy"
-            routeSettings.active_route_index = len(routeSettings.routes) - 1
-        return {"FINISHED"}
-
-
 class RouteInfoRouteMoveUpOperator(bpy.types.Operator):
     bl_idname = "routeinfo.move_route_up"
     bl_label = "Move Route Up"

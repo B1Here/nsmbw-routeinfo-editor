@@ -28,7 +28,6 @@ classes = (
     # operators
     routeops.RouteInfoRouteAddOperator,
     routeops.RouteInfoRouteRemoveOperator,
-    routeops.RouteInfoRouteDuplicateOperator,
     routeops.RouteInfoRouteMoveUpOperator,
     routeops.RouteInfoRouteMoveDownOperator,
     routeops.RouteInfoRouteRefreshOperator,
