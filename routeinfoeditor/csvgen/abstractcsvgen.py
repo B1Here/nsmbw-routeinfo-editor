@@ -43,3 +43,6 @@ class AbstractCsvGen(ABC):
     @abstractmethod
     def _get_file_name(self, world: str) -> str:
         pass
+
+    def _csv_array_guard(self, string: str) -> str:
+        return f'"{string}"' if "," in string else string

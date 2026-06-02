@@ -32,6 +32,3 @@ class PointCsvGen(AbstractCsvGen):
 
     def _get_file_name(self, world: str) -> str:
         return f"pointW{world}.csv"
-
-    def _csv_array_guard(self, string: str) -> str:
-        return f'"{string}"' if "," in string else string
