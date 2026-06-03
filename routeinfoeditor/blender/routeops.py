@@ -7,47 +7,6 @@ from routeinfoeditor.blender.common import __is_defined__
 from routeinfoeditor.nsmbw.routeinfoutils import __is_point__
 
 
-class RouteInfoRouteAddOperator(bpy.types.Operator):
-    bl_idname = "routeinfo.add_route"
-    bl_label = "Add Route"
-
-    def execute(
-        self, context: bpy.types.Context
-    ) -> set[
-        Literal["RUNNING_MODAL", "CANCELLED", "FINISHED", "PASS_THROUGH", "INTERFACE"]
-    ]:
-        armature = context.armature
-        if not __is_defined__(armature):
-            self.report({"ERROR"}, "No armature found")
-            return {"CANCELLED"}
-        route_settings = armature.route_info_route_settings
-        route_settings.routes.add().name = "New Route"
-        route_settings.active_route_index = len(route_settings.routes) - 1
-        return {"FINISHED"}
-
-
-class RouteInfoRouteRemoveOperator(bpy.types.Operator):
-    bl_idname = "routeinfo.remove_route"
-    bl_label = "Remove Route"
-
-    def execute(
-        self, context: bpy.types.Context
-    ) -> set[
-        Literal["RUNNING_MODAL", "CANCELLED", "FINISHED", "PASS_THROUGH", "INTERFACE"]
-    ]:
-        armature = context.armature
-        if not __is_defined__(armature):
-            self.report({"ERROR"}, "No armature found")
-            return {"CANCELLED"}
-        route_settings = armature.route_info_route_settings
-        if route_settings.active_route_index < len(route_settings.routes):
-            route_settings.routes.remove(route_settings.active_route_index)
-            route_settings.active_route_index = max(
-                0, route_settings.active_route_index - 1
-            )
-        return {"FINISHED"}
-
-
 class RouteInfoRouteMoveUpOperator(bpy.types.Operator):
     bl_idname = "routeinfo.move_route_up"
     bl_label = "Move Route Up"

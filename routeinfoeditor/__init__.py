@@ -3,7 +3,7 @@ import bpy
 from routeinfoeditor.blender import csv, point, route, routeops
 
 bl_info = {
-    "name": "RouteInfo CSV Editor",
+    "name": "RouteInfo Editor",
     "author": "B1Here",
     "blender": (3, 3, 0),
     "version": (1, 1, 0),
@@ -27,8 +27,6 @@ classes = (
     point.RouteInfoPointPanel,
     point.RouteInfoPointSecretPanel,
     # operators
-    routeops.RouteInfoRouteAddOperator,
-    routeops.RouteInfoRouteRemoveOperator,
     routeops.RouteInfoRouteMoveUpOperator,
     routeops.RouteInfoRouteMoveDownOperator,
     routeops.RouteInfoRouteRefreshOperator,
